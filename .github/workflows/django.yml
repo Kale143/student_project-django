@@ -24,14 +24,30 @@ jobs:
         run: |
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd ~/student_project-django
+            git reset --hard
             git pull origin main
+
             source student_project_django/Student_project/myenv/bin/activate
             pip install -r student_project_django/Student_project/requirements.txt
             python3 student_project_django/Student_project/manage.py migrate
             python3 student_project_django/Student_project/manage.py collectstatic --noinput
+
+            sudo chmod -R 755 student_project_django/Student_project/static
             sudo systemctl restart gunicorn
             sudo systemctl reload nginx
-          EOF
+        EOF
+
+        # run: |
+        #   ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+        #     cd ~/student_project-django
+        #     git pull origin main
+        #     source student_project_django/Student_project/myenv/bin/activate
+        #     pip install -r student_project_django/Student_project/requirements.txt
+        #     python3 student_project_django/Student_project/manage.py migrate
+        #     python3 student_project_django/Student_project/manage.py collectstatic --noinput
+        #     sudo systemctl restart gunicorn
+        #     sudo systemctl reload nginx
+        #   EOF
 
 # name: Django CI/CD
 
